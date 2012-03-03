@@ -1,4 +1,4 @@
-var config, fs, green, input, log, output, pub, red, redis, reset, sub, tty;
+var config, fs, green, input, log, output, pub, red, redis, reset, store, sub, tty;
 
 redis = require('redis');
 
@@ -20,14 +20,21 @@ try {
   config = JSON.parse(fs.readFileSync([process.env.HOME, '.frack.json'].join('/')));
   if (config.server != null) {
     sub = redis.createClient(config.port, config.server);
-    sub.auth(config.password);
+    if (config.password != null) sub.auth(config.password);
     pub = redis.createClient(config.port, config.server);
-    pub.auth(config.password);
+    if (config.password != null) pub.auth(config.password);
+    store = redis.createClient(config.port, config.server);
+    if (config.password != null) store.auth(config.password);
   } else {
     sub = redis.createClient();
     pub = redis.createClient();
+    store = redis.createClient();
   }
   sub.subscribe(config.channel);
+  store.set("" + config.channel + ":" + config.name, "online");
+  process.on('exit', function() {
+    return store.del("" + config.channel + ":" + config.name);
+  });
   log = function(msg) {
     return process.stdout.write("\b\b" + green + "[" + msg.name + "] " + red + "-> " + reset + msg.body + "> ");
   };
@@ -39,16 +46,28 @@ try {
     } else {
       return setTimeout((function() {
         return log(msg);
-      }), 5000);
+      }), 3000);
     }
   });
   output.write('> ');
   input.resume();
   input.on('data', function(data) {
-    return pub.publish(config.channel, JSON.stringify({
-      name: config.name,
-      body: data.toString()
-    }));
+    if (data.toString().match(/^\$/)) {
+      console.log('Users Online');
+      return store.keys("" + config.channel + ":*", function(e, d) {
+        var user, _i, _len;
+        for (_i = 0, _len = d.length; _i < _len; _i++) {
+          user = d[_i];
+          output.write(user.replace(/jrs:/, ''));
+        }
+        return output.write("\n> ");
+      });
+    } else {
+      return pub.publish(config.channel, JSON.stringify({
+        name: config.name,
+        body: data.toString()
+      }));
+    }
   });
   input.on('end', function() {
     return console.log('Goodbye.');
