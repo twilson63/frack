@@ -43,5 +43,7 @@ task 'docs', 'Generate annotated source code with Docco', ->
 task 'build', ->
   build -> log ":)", green
 
+task 'watch', ->
+  build true, -> log ":)", green
 task 'spec', 'Run Jasmine-Node', ->
   build -> spec -> log ":)", green

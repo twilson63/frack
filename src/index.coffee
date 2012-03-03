@@ -1,5 +1,6 @@
 redis = require 'redis'
 fs = require 'fs'
+tty = require 'tty'
 input = process.stdin
 output = process.stdout
 
@@ -20,10 +21,15 @@ try
     pub = redis.createClient()
 
   sub.subscribe config.channel
-
   log = (msg) -> 
     process.stdout.write "\b\b#{green}[#{msg.name}] #{red}-> #{reset}#{msg.body}> "
-  sub.on 'message', (c, m) -> log JSON.parse(m)
+  sub.on 'message', (c, m) -> 
+    msg = JSON.parse(m)
+    if msg.name == config.name
+      log msg
+    else
+      setTimeout ( -> log msg), 5000
+
   output.write '> '
 
   input.resume()
@@ -34,4 +40,3 @@ try
 catch err
   console.log 'config file is required'
   console.log err
-

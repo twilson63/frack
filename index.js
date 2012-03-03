@@ -1,8 +1,10 @@
-var config, fs, green, input, log, output, pub, red, redis, reset, sub;
+var config, fs, green, input, log, output, pub, red, redis, reset, sub, tty;
 
 redis = require('redis');
 
 fs = require('fs');
+
+tty = require('tty');
 
 input = process.stdin;
 
@@ -30,7 +32,15 @@ try {
     return process.stdout.write("\b\b" + green + "[" + msg.name + "] " + red + "-> " + reset + msg.body + "> ");
   };
   sub.on('message', function(c, m) {
-    return log(JSON.parse(m));
+    var msg;
+    msg = JSON.parse(m);
+    if (msg.name === config.name) {
+      return log(msg);
+    } else {
+      return setTimeout((function() {
+        return log(msg);
+      }), 5000);
+    }
   });
   output.write('> ');
   input.resume();
