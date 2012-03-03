@@ -1,0 +1,17 @@
+{
+  "author": "Tom Wilson <tom@jackhq.com>",
+  "name": "frack",
+  "description": "Redis Console Chat Application",
+  "version": "0.0.1",
+  "repository": {
+    "url": ""
+  },
+  "engines": {
+    "node": "0.6 || 0.7"
+  },
+  "dependencies": {
+    "redis": "*"
+  },
+  "devDependencies": {},
+  "optionalDependencies": {}
+}
