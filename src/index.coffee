@@ -46,7 +46,7 @@ try
       # List online users
       console.log 'Users Online'
       store.keys "#{config.channel}:*", (e, d) -> 
-        output.write(user.replace(/jrs:/, '')) for user in d
+        output.write(user.replace(/jrs:/, '') + ' ') for user in d
         output.write "\n> "
     else
       pub.publish config.channel, JSON.stringify(name: config.name, body: data.toString())
