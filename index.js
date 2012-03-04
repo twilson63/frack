@@ -58,7 +58,7 @@ try {
         var user, _i, _len;
         for (_i = 0, _len = d.length; _i < _len; _i++) {
           user = d[_i];
-          output.write(user.replace(/jrs:/, '') + ' ');
+          output.write(user.replace(/jrs:/, '') + '\n');
         }
         return output.write("\n> ");
       });
