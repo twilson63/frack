@@ -33,6 +33,13 @@ frack
 ```
 ---
 
+## Commands
+
+``` sh
+$ls
+```
+> Display all users currently online
+
 # Coming Soon !
 
 ## Search
